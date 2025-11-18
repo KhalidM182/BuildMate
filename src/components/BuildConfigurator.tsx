@@ -103,7 +103,7 @@ export default function BuildConfigurator({ onGenerateBuilds, isLoading }: Build
             placeholder="e.g., 'I want 120 fps on Fortnite at 1080p' or 'Need fast GPU compute for training models'"
             value={customRequirements}
             onChange={(e) => setCustomRequirements(e.target.value)}
-            className="min-h-[100px] resize-none"
+            className="min-h-[120px] resize-none glass border-border/50 focus:border-primary/50 focus:shadow-glow-primary transition-all duration-300 placeholder:text-muted-foreground/50"
           />
         </div>
 

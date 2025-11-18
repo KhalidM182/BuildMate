@@ -2,9 +2,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import BuildConfigurator, { BuildConfig } from "@/components/BuildConfigurator";
 import BuildResults from "@/components/BuildResults";
+import BuildActions from "@/components/BuildActions";
+import PeripheralsSection from "@/components/PeripheralsSection";
+import BuildComparison from "@/components/BuildComparison";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Cpu, Sparkles, Zap, Shield } from "lucide-react";
+import { Cpu, Sparkles, Zap, Shield, GitCompare } from "lucide-react";
 
 interface Build {
   tier: string;
@@ -21,11 +24,16 @@ export default function Index() {
   const [showConfigurator, setShowConfigurator] = useState(false);
   const [builds, setBuilds] = useState<Build[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [buildConfig, setBuildConfig] = useState<BuildConfig | null>(null);
+  const [selectedTier, setSelectedTier] = useState<string>("Better");
+  const [showComparison, setShowComparison] = useState(false);
+  const [comparisonBuilds, setComparisonBuilds] = useState<[Build, Build] | null>(null);
   const { toast } = useToast();
 
   const handleGenerateBuilds = async (config: BuildConfig) => {
     setIsLoading(true);
     setBuilds(null);
+    setBuildConfig(config);
 
     try {
       const { data, error } = await supabase.functions.invoke("generate-pc-build", {
@@ -44,6 +52,8 @@ export default function Index() {
       }
 
       setBuilds(data.builds);
+      setSelectedTier("Better");
+      setShowComparison(false);
       toast({
         title: "Success!",
         description: "Your custom PC builds have been generated.",
@@ -57,6 +67,19 @@ export default function Index() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCompareBuilds = (tier1: string, tier2: string) => {
+    if (!builds) return;
+    const build1 = builds.find((b) => b.tier === tier1);
+    const build2 = builds.find((b) => b.tier === tier2);
+    if (build1 && build2) {
+      setComparisonBuilds([build1, build2]);
+      setShowComparison(true);
+      setTimeout(() => {
+        document.getElementById("comparison")?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
     }
   };
 
@@ -146,9 +169,64 @@ export default function Index() {
 
       {/* Results Section */}
       {builds && (
-        <section className="py-20 px-4">
-          <BuildResults builds={builds} />
-        </section>
+        <>
+          <section className="py-20 px-4">
+            <BuildResults builds={builds} onTierChange={setSelectedTier} />
+          </section>
+
+          {/* Action Buttons */}
+          <section className="py-8 px-4">
+            <div className="w-full max-w-6xl mx-auto space-y-8">
+              <BuildActions
+                buildData={builds}
+                budget={buildConfig!.budget}
+                useCase={buildConfig!.useCase}
+                customRequirements={buildConfig?.customRequirements}
+                selectedTier={selectedTier}
+              />
+
+              {/* Compare Button */}
+              <div className="flex justify-center gap-4">
+                <Button
+                  variant="outline"
+                  className="glass"
+                  onClick={() => handleCompareBuilds("Good", "Better")}
+                >
+                  <GitCompare className="w-4 h-4 mr-2" />
+                  Compare Good vs Better
+                </Button>
+                <Button
+                  variant="outline"
+                  className="glass"
+                  onClick={() => handleCompareBuilds("Better", "Best")}
+                >
+                  <GitCompare className="w-4 h-4 mr-2" />
+                  Compare Better vs Best
+                </Button>
+              </div>
+            </div>
+          </section>
+
+          {/* Comparison Section */}
+          {showComparison && comparisonBuilds && (
+            <section id="comparison" className="py-20 px-4">
+              <div className="w-full max-w-6xl mx-auto">
+                <BuildComparison build1={comparisonBuilds[0]} build2={comparisonBuilds[1]} />
+              </div>
+            </section>
+          )}
+
+          {/* Peripherals Section */}
+          <section className="py-20 px-4">
+            <div className="w-full max-w-6xl mx-auto">
+              <PeripheralsSection
+                budget={buildConfig!.budget}
+                useCase={buildConfig!.useCase}
+                selectedBuild={builds.find((b) => b.tier === selectedTier)!}
+              />
+            </div>
+          </section>
+        </>
       )}
 
       {/* Footer */}

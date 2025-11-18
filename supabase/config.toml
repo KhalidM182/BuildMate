@@ -2,3 +2,6 @@ project_id = "ixxffbyehrsvzgyxwmap"
 
 [functions.generate-pc-build]
 verify_jwt = false
+
+[functions.recommend-peripherals]
+verify_jwt = false

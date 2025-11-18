@@ -8,6 +8,7 @@ import BuildComparison from "@/components/BuildComparison";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Cpu, Sparkles, Zap, Shield, GitCompare } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 interface Build {
   tier: string;
@@ -100,12 +101,22 @@ export default function Index() {
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto text-center space-y-8 animate-slide-up">
+          {/* Logo */}
+          <div className="flex justify-center mb-8">
+            <img 
+              src={logo} 
+              alt="BuildMate Logo" 
+              className="w-24 h-24 md:w-32 md:h-32 animate-float drop-shadow-[0_0_30px_rgba(139,92,246,0.5)]"
+            />
+          </div>
+
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-border mb-4">
             <Sparkles className="w-4 h-4 text-accent animate-glow" />
             <span className="text-sm font-medium">Powered by AI</span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+            <span className="gradient-text">BuildMate</span>
             Build Your Dream PC with{" "}
             <span className="gradient-text">AI Intelligence</span>
           </h1>

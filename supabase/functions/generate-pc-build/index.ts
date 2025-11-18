@@ -63,61 +63,108 @@ For each tier, provide a JSON response with this structure:
   ]
 }`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.7,
-      }),
-    });
+    // Retry logic for transient errors
+    let lastError;
+    const maxRetries = 2;
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        if (attempt > 0) {
+          console.log(`Retry attempt ${attempt} of ${maxRetries}`);
+          // Wait before retry (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ 
-          error: "Rate limit exceeded. Please try again in a moment." 
-        }), {
-          status: 429,
+        const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-2.5-flash",
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt }
+            ],
+            response_format: { type: "json_object" },
+            temperature: 0.7,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`AI gateway error (attempt ${attempt + 1}):`, response.status, errorText.substring(0, 200));
+          
+          if (response.status === 429) {
+            return new Response(JSON.stringify({ 
+              error: "Rate limit exceeded. Please try again in a moment." 
+            }), {
+              status: 429,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+          
+          if (response.status === 402) {
+            return new Response(JSON.stringify({ 
+              error: "AI service credits depleted. Please contact support." 
+            }), {
+              status: 402,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+          
+          // For 500 errors, retry if we have attempts left
+          if (response.status === 500 && attempt < maxRetries) {
+            lastError = new Error(`AI Gateway temporary error: ${response.status}`);
+            continue;
+          }
+          
+          throw new Error(`AI Gateway error: ${response.status}`);
+        }
+
+        // Success! Parse and return the response
+        const data = await response.json();
+        const aiResponse = data.choices[0].message.content;
+        
+        console.log("AI Response received successfully");
+        
+        return new Response(aiResponse, {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
+        
+      } catch (fetchError) {
+        lastError = fetchError;
+        if (attempt < maxRetries) {
+          const errorMsg = fetchError instanceof Error ? fetchError.message : String(fetchError);
+          console.error(`Attempt ${attempt + 1} failed:`, errorMsg);
+          continue;
+        }
+        throw fetchError;
       }
-      
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ 
-          error: "AI service credits depleted. Please contact support." 
-        }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      
-      throw new Error(`AI Gateway error: ${response.status}`);
     }
+    
+    // If we get here, all retries failed
+    throw lastError || new Error("Failed to generate builds after retries");
 
-    const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
-    
-    console.log("AI Response:", aiResponse);
-    
-    return new Response(aiResponse, {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-    
   } catch (error) {
     console.error("Error in generate-pc-build:", error);
+    
+    // Provide user-friendly error messages
+    let errorMessage = "Failed to generate builds. Please try again.";
+    
+    if (error instanceof Error) {
+      if (error.message.includes("temporary error") || error.message.includes("500")) {
+        errorMessage = "The AI service is temporarily unavailable. Please try again in a moment.";
+      } else if (error.message.includes("timeout")) {
+        errorMessage = "Request timed out. Please try again.";
+      } else {
+        errorMessage = error.message;
+      }
+    }
+    
     return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : "Unknown error occurred" 
+      error: errorMessage
     }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

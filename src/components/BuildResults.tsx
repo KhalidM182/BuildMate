@@ -42,6 +42,7 @@ interface Build {
 
 interface BuildResultsProps {
   builds: Build[];
+  onTierChange?: (tier: string) => void;
 }
 
 const componentIcons = {
@@ -61,7 +62,7 @@ const tierColors = {
   Best: "bg-accent/20 text-accent",
 };
 
-export default function BuildResults({ builds }: BuildResultsProps) {
+export default function BuildResults({ builds, onTierChange }: BuildResultsProps) {
   return (
     <div className="w-full max-w-6xl mx-auto space-y-8 animate-slide-up">
       <div className="text-center space-y-4">
@@ -69,7 +70,11 @@ export default function BuildResults({ builds }: BuildResultsProps) {
         <p className="text-muted-foreground">Three optimized configurations tailored to your needs</p>
       </div>
 
-      <Tabs defaultValue="Better" className="w-full">
+      <Tabs 
+        defaultValue="Better" 
+        className="w-full"
+        onValueChange={onTierChange}
+      >
         <TabsList className="grid w-full grid-cols-3 mb-8">
           {builds.map((build) => (
             <TabsTrigger key={build.tier} value={build.tier} className="text-lg">

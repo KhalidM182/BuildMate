@@ -14,13 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      builds: {
+        Row: {
+          budget: number
+          build_data: Json
+          created_at: string | null
+          custom_requirements: string | null
+          id: string
+          name: string
+          selected_tier: string
+          share_token: string | null
+          updated_at: string | null
+          use_case: string
+        }
+        Insert: {
+          budget: number
+          build_data: Json
+          created_at?: string | null
+          custom_requirements?: string | null
+          id?: string
+          name: string
+          selected_tier: string
+          share_token?: string | null
+          updated_at?: string | null
+          use_case: string
+        }
+        Update: {
+          budget?: number
+          build_data?: Json
+          created_at?: string | null
+          custom_requirements?: string | null
+          id?: string
+          name?: string
+          selected_tier?: string
+          share_token?: string | null
+          updated_at?: string | null
+          use_case?: string
+        }
+        Relationships: []
+      }
+      peripherals: {
+        Row: {
+          build_id: string | null
+          category: string
+          created_at: string | null
+          id: string
+          model: string
+          price: number
+          reason: string
+          specs: Json | null
+        }
+        Insert: {
+          build_id?: string | null
+          category: string
+          created_at?: string | null
+          id?: string
+          model: string
+          price: number
+          reason: string
+          specs?: Json | null
+        }
+        Update: {
+          build_id?: string | null
+          category?: string
+          created_at?: string | null
+          id?: string
+          model?: string
+          price?: number
+          reason?: string
+          specs?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "peripherals_build_id_fkey"
+            columns: ["build_id"]
+            isOneToOne: false
+            referencedRelation: "builds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_share_token: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never

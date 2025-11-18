@@ -1,0 +1,4 @@
+project_id = "ixxffbyehrsvzgyxwmap"
+
+[functions.generate-pc-build]
+verify_jwt = false

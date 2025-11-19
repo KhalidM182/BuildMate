@@ -189,7 +189,7 @@ export default function Index() {
           <section className="py-8 px-4">
             <div className="w-full max-w-6xl mx-auto space-y-8">
               <BuildActions
-                buildData={builds}
+                buildData={builds.find((b) => b.tier === selectedTier)!}
                 budget={buildConfig!.budget}
                 useCase={buildConfig!.useCase}
                 customRequirements={buildConfig?.customRequirements}

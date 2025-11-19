@@ -1,73 +1,57 @@
-# Welcome to your Lovable project
+<img width="1899" height="905" alt="Screenshot 2025-11-18 202637" src="https://github.com/user-attachments/assets/ed3f31b7-d058-404f-a7f3-0b8a40f7797e" />
 
-## Project info
+# BuildMate – AI Powered PC Builder
 
-**URL**: https://lovable.dev/projects/78a8f6d9-5e79-4f10-8ec4-a1fa77afe268
+## BuildMate is a modern AI-driven web application that helps users generate the perfect PC build based on their budget and performance needs.
+This project started as a fun idea I wanted to try out, and I decided to push it further by collaborating with AI to turn the concept into a real, working website.
 
-## How can I edit this code?
+The result is a small, experimental project that mixes PC-building knowledge with AI-powered recommendations.
 
-There are several ways of editing your application.
+Hosted on Vercel for fast performance and smooth user experience:
+👉 https://buildmate-brown.vercel.app/
 
-**Use Lovable**
+✨ **Features**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/78a8f6d9-5e79-4f10-8ec4-a1fa77afe268) and start prompting.
+• AI Powered PC Recommendations
+Enter your budget and usage type, and BuildMate instantly generates an optimized PC build.
 
-Changes made via Lovable will be committed automatically to this repo.
+• Supports Multiple Use Cases
 
-**Use your preferred IDE**
+🎮 Gaming
+🧱 3D Modeling
+🤖 Machine Learning
+⚙️ Mixed Use
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+• Smart Component Selection
+Focuses on the most important parts of the build:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+CPU
+GPU
+RAM
+Motherboard
 
-Follow these steps:
+Optionally includes:
+Storage
+PSU
+Case
+Cooling
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+• Clean & Modern UI
+Sleek, minimal, and easy to navigate.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+• Real-Time Updates
+Changing the budget or the category updates the build instantly.
 
-# Step 3: Install the necessary dependencies.
-npm i
+• Compatibility-Aware
+BuildMate avoids mismatched parts to keep everything compatible.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+• Fully Responsive
+Works perfectly on both desktop and mobile devices.
 
-**Edit a file directly in GitHub**
+🧠 **How It Works**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/78a8f6d9-5e79-4f10-8ec4-a1fa77afe268) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+• User enters their budget
+• User selects their use case
+• AI processes the input
+• BuildMate returns the best build for performance and price
+• Users can adjust and regenerate builds anytime

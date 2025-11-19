@@ -48,6 +48,15 @@ export default function BuildActions({
     setIsSaving(true);
 
     try {
+      console.log("Saving build with data:", {
+        name: buildName,
+        budget,
+        use_case: useCase,
+        custom_requirements: customRequirements,
+        selected_tier: selectedTier,
+        build_data_keys: Object.keys(buildData),
+      });
+
       const { data, error } = await supabase
         .from("builds")
         .insert({
@@ -62,7 +71,12 @@ export default function BuildActions({
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
+
+      console.log("Build saved successfully:", data);
 
       toast({
         title: "Build Saved!",
@@ -70,11 +84,12 @@ export default function BuildActions({
       });
 
       setBuildName("");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving build:", error);
+      const errorMessage = error?.message || error?.error_description || "Failed to save build. Please try again.";
       toast({
         title: "Error",
-        description: "Failed to save build. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -124,11 +139,12 @@ export default function BuildActions({
         title: "Build Shared!",
         description: "Your build is now shareable. Copy the link below.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error sharing build:", error);
+      const errorMessage = error?.message || error?.error_description || "Failed to share build. Please try again.";
       toast({
         title: "Error",
-        description: "Failed to share build. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

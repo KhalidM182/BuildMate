@@ -48,15 +48,6 @@ export default function BuildActions({
     setIsSaving(true);
 
     try {
-      console.log("Saving build with data:", {
-        name: buildName,
-        budget,
-        use_case: useCase,
-        custom_requirements: customRequirements,
-        selected_tier: selectedTier,
-        build_data_keys: Object.keys(buildData),
-      });
-
       const { data, error } = await supabase
         .from("builds")
         .insert({
@@ -72,11 +63,8 @@ export default function BuildActions({
         .single();
 
       if (error) {
-        console.error("Supabase error:", error);
         throw error;
       }
-
-      console.log("Build saved successfully:", data);
 
       toast({
         title: "Build Saved!",
@@ -85,11 +73,9 @@ export default function BuildActions({
 
       setBuildName("");
     } catch (error: any) {
-      console.error("Error saving build:", error);
-      const errorMessage = error?.message || error?.error_description || "Failed to save build. Please try again.";
       toast({
-        title: "Error",
-        description: errorMessage,
+        title: "Error Saving Build",
+        description: error?.message || "Failed to save build. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -110,11 +96,13 @@ export default function BuildActions({
     setIsSaving(true);
 
     try {
-      // First, get a share token
+      // Generate a share token
       const { data: tokenData, error: tokenError } = await supabase
-        .rpc('generate_share_token' as any);
+        .rpc('generate_share_token');
 
-      if (tokenError) throw tokenError;
+      if (tokenError) {
+        throw tokenError;
+      }
 
       // Insert with share token
       const { data, error } = await supabase
@@ -126,12 +114,14 @@ export default function BuildActions({
           custom_requirements: customRequirements,
           build_data: buildData,
           selected_tier: selectedTier,
-          share_token: tokenData,
+          share_token: tokenData as string,
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       setShareToken(data.share_token);
 
@@ -140,11 +130,9 @@ export default function BuildActions({
         description: "Your build is now shareable. Copy the link below.",
       });
     } catch (error: any) {
-      console.error("Error sharing build:", error);
-      const errorMessage = error?.message || error?.error_description || "Failed to share build. Please try again.";
       toast({
-        title: "Error",
-        description: errorMessage,
+        title: "Error Sharing Build",
+        description: error?.message || "Failed to share build. Please try again.",
         variant: "destructive",
       });
     } finally {

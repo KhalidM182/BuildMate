@@ -20,6 +20,8 @@ serve(async (req) => {
 
     const systemPrompt = `You are an expert PC builder with deep knowledge of hardware compatibility, performance optimization, and price-to-performance ratios. Your goal is to recommend three PC build tiers (Good, Better, Best) within the user's budget.
 
+CRITICAL: Use only real, currently available hardware. NVIDIA RTX 50 series GPUs (RTX 5090, RTX 5080, RTX 5070 Ti, RTX 5070, RTX 5060 Ti, RTX 5060) ARE available and released. Do NOT use placeholders or mention these as unreleased. Use actual RTX 50 series models when they fit the budget and requirements.
+
 For each build, provide:
 1. Complete component list with specific models and prices
 2. Performance expectations for the use case

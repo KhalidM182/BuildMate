@@ -48,7 +48,7 @@ export default function BuildActions({
     setIsSaving(true);
 
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("builds")
         .insert({
           name: buildName,
@@ -58,9 +58,7 @@ export default function BuildActions({
           build_data: buildData,
           selected_tier: selectedTier,
           share_token: null,
-        })
-        .select()
-        .single();
+        });
 
       if (error) {
         throw error;
